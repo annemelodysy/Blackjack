@@ -3,13 +3,13 @@ require 'sinatra'
 
 set :sessions, true
 
+session = {}
 
 get '/' do 
-  if @username == nil
-    redirect '/form'
+  if session[:player] 
+    "Welcome to Blackjack, #{session[:player]}!"
   else
-    "username is" 
-    @username
+    redirect '/form'
   end
 end
 
@@ -17,8 +17,8 @@ get '/form' do
   erb :form
 end  
 
-post '/myaction' do
-  @username = params['username']
+post '/login' do
+ session[:player] = params['player']
 end  
 
 # get '/layout' do
