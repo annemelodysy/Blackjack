@@ -3,14 +3,24 @@ require 'sinatra'
 
 set :sessions, true
 
-get '/form' do  
-  erb :form  
+
+get '/' do 
+  if @username == nil
+    redirect '/form'
+  else
+    "username is" 
+    @username
+  end
+end
+
+get '/form' do
+  erb :form
 end  
 
-#What is your name?
-
-post '/form' do  
-  "You said '#{params[:message]}'"  
+post '/myaction' do
+  @username = params['username']
 end  
 
-
+# get '/layout' do
+#   erb :layout
+# end
