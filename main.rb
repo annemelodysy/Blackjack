@@ -1,14 +1,10 @@
 require 'rubygems'
 require 'sinatra'
+require 'pry'
 
 set :sessions, true
 
 helpers do
-  def to_image(card)
-    
-    card.each do |holder|
-  end
- end 
 
   def calc_value(cards)
     sum = 0
