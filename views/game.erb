@@ -1,0 +1,12 @@
+<h1>Blackjack</h1>
+<h4>Good luck <%= session[:player] %></h4>
+
+<h4>Dealer's Cards</h4>
+<p><%= session[:dealercards]%></p>
+<p>Dealer Total: <%= session[:dealertotal] %></p>
+<h4><%= session[:player]%>'s Cards</h4>
+<p><%= session[:playercards]%><p>
+<p>Player Total: <%= session[:playertotal] %></p>
+
+<input type="submit" class="btn btn-primary" value = "Hit">
+<input type="submit" class="btn btn-success" value = "Stay">
