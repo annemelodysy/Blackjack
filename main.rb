@@ -4,8 +4,45 @@ require 'pry'
 
 set :sessions, true
 
+
+
 helpers do
 
+  def blackjack_or_bust?(total)
+    if total > 21
+      @error = "You busted!"
+      halt erb (:game)
+    elsif total == 21
+      @error = "You hit Blackjack!"
+      halt erb (:game)  
+    end  
+  end  
+
+  def card_to_image(card)
+    suit = card[0]
+    value = card[1]
+
+    case suit 
+      when 'C' then suit = 'clubs'
+      when 'S' then suit = 'spades'
+      when 'D' then suit = 'diamonds'
+      when 'H' then suit = 'hearts'
+    end  
+
+    if value.to_i == 0
+      case value
+        when 'J' then value = 'jack'
+        when 'Q' then value = 'queen'  
+        when 'K' then value = 'king'  
+        when 'A' then value = 'ace'
+      end
+    end
+
+    image = "<img src=\"/images/cards/#{suit}_#{value}.jpg\" class=\"img-polaroid\"/>"
+
+    image
+  end  
+  
   def calc_value(cards)
     sum = 0
     arr = cards.map{|e| e[1]}
@@ -58,7 +95,14 @@ get '/game' do
 
   session[:playertotal] = calc_value(session[:playercards])
   session[:dealertotal] = calc_value(session[:dealercards])
+  blackjack_or_bust?(session[:playertotal])
 erb :game
 end  
 
+post '/game' do
+  session[:playercards] << session[:deck].pop
+  session[:playertotal] = calc_value(session[:playercards])
+  blackjack_or_bust?(session[:playertotal])
+  erb :game
+end
 

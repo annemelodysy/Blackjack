@@ -1,28 +1,22 @@
-<% require 'pry' %>
+<h1>Blackjack!</h1>
 
-<h1>Blackjack</h1>
-<h4>Good luck <%= session[:player] %></h4>
 
-<pre>
-Dealer's Cards:
-<% binding.pry %>
-<ul>
-<%= session[:dealercards].each do |card| %>
-  <li><%= card.to_s %></li>
+  <div class="well">
+<h4>Dealer's Cards:</h4>    
+<% session[:dealercards].each do |card| %>
+  <%= card_to_image(card) %>
 <% end %>
-</ul>
-Dealer Total: <%= session[:dealertotal] %>
-</pre>
+</div>
 
-<pre>
-<%= session[:player] %>'s Cards:
-<ul>
-<%= session[:playercards].each do |card| %>
-  <li><%= card.to_s %></li>
+ <div class ="well"> 
+<h4><%= session[:player] %>'s Cards:</h4>
+<% session[:playercards].each do |card| %>
+  <%= card_to_image(card) %>
 <% end %>
-</ul>
-Player Total: <%= session[:playertotal] %>
-</pre>
+</div>
+<p>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</p>
 
-<input type="submit" class="btn btn-primary" value = "Hit">
-<input type="submit" class="btn btn-success" value = "Stay">
+<form action='/game' method='post'>
+<p><input type="submit" class="btn btn-large btn-primary" value = "Hit"></p>
+</form><form action ='/stay' method='post'>
+<p><input type="submit" class="btn btn-large btn-success" value = "Stay"></p></form>
