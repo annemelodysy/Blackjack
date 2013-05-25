@@ -6,6 +6,14 @@
 <% session[:dealercards].each do |card| %>
   <%= card_to_image(card) %>
 <% end %>
+<% if @show_dealer_hit_button %>
+<p>
+  <h5> Dealer has <%= calc_value(session[:dealercards])%> and will hit.</h5>
+  <form action='/game/dealer/hit' method='post'>
+  <input type='submit' class='btn btn-primary' value='Click to see dealer card &rarr;'>
+  </form>
+</p>
+<% end %>
 </div>
 
  <div class ="well"> 
@@ -14,9 +22,12 @@
   <%= card_to_image(card) %>
 <% end %>
 </div>
-<p>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</p>
 
-<form action='/game' method='post'>
+<% if @show_hit_stay_buttons %>
+<p>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</p>
+<form id="hit_form" action='/game/player/hit' method='post'>
 <p><input type="submit" class="btn btn-large btn-primary" value = "Hit"></p>
-</form><form action ='/stay' method='post'>
+</form>
+<form id "stay_form" action ='/game/player/stay' method='post'>
 <p><input type="submit" class="btn btn-large btn-success" value = "Stay"></p></form>
+<% end %>

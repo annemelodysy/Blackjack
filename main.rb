@@ -4,17 +4,22 @@ require 'pry'
 
 set :sessions, true
 
+before do
+  @show_hit_stay_buttons = true
+end  
 
 
 helpers do
 
   def blackjack_or_bust?(total)
     if total > 21
-      @error = "You busted!"
+      @error = "You busted! Sorry, you lose."
+      @show_hit_stay_buttons = false
       halt erb (:game)
     elsif total == 21
-      @error = "You hit Blackjack!"
-      halt erb (:game)  
+      @success = "You hit Blackjack! Congratulations, you win."
+      @show_hit_stay_buttons = false  
+      halt erb (:game)
     end  
   end  
 
@@ -38,7 +43,7 @@ helpers do
       end
     end
 
-    image = "<img src=\"/images/cards/#{suit}_#{value}.jpg\" class=\"img-polaroid\"/>"
+    image = "<img src=\"/images/cards/#{suit}_#{value}.jpg\" class='card_image'/>"
 
     image
   end  
@@ -99,10 +104,54 @@ get '/game' do
 erb :game
 end  
 
-post '/game' do
+post '/game/player/hit' do
   session[:playercards] << session[:deck].pop
   session[:playertotal] = calc_value(session[:playercards])
   blackjack_or_bust?(session[:playertotal])
   erb :game
 end
+
+post '/game/player/stay' do
+  @show_hit_stay_buttons = false
+  redirect '/game/dealer'
+end  
+
+get '/game/dealer' do
+  @show_hit_stay_buttons = false
+  dealer_total = calc_value(session[:dealercards])
+  if dealer_total == 21
+    @error = "Sorry, dealer hit blackjack. Try again."
+  elsif dealer_total > 21
+    @success = "Congratulations, dealer busted with #{dealer_total}. You win #winning."
+  elsif dealer_total >= 17
+    redirect '/game/compare'
+  else
+    @show_dealer_hit_button = true
+  end  
+
+  erb (:game)      
+end
+
+post '/game/dealer/hit' do
+  session[:dealercards] << session[:deck].pop
+  redirect '/game/dealer'
+end  
+
+get '/game/compare' do
+  @show_hit_stay_buttons = false
+  @show_dealer_hit_button = false
+  player_total = calc_value(session[:playercards])
+  dealer_total = calc_value(session[:dealercards])
+
+  if player_total < dealer_total
+    @error = "Sorry, dealer has #{dealer_total} and #{session[:player]} has #{player_total}. #{session[:player]} lost :(."
+  elsif player_total > dealer_total
+    @success = "Congratulations, you win. What a badass!"
+  else
+    @error = "Wow, it's a tie...boring."
+  end
+
+  erb (:game)
+end      
+      
 
