@@ -20,9 +20,15 @@
   <div class="container">
     <%if @error %>
       <div class="alert alert-error"><%=@error%></div>
+      <form id="play_again" action='/game' method='get'>
+      <p><input type="submit" class="btn btn-success" value = "Play Again"></p>
+      </form>
     <% end %>
     <%if @success %>
       <div class="alert alert-success"><%=@success%></div>
+      <form id="play_again" action='/game' method='get'>
+      <p><input type="submit" class="btn btn-success" value = "Play Again"></p>
+      </form>
     <% end %>
       <%= yield %>
   </div>
