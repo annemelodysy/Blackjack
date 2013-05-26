@@ -2,9 +2,14 @@
 
 
   <div class="well">
-<h4>Dealer's Cards:</h4>    
+<h4>Dealer's Cards:</h4> 
+<% if @show_dealer_hand %>   
 <% session[:dealercards].each do |card| %>
   <%= card_to_image(card) %>
+<% end %>
+<% else %>
+<%= card_to_image(session[:dealercards][0]) %>
+<img src='/images/cards/cover.jpg' class='card_image'>
 <% end %>
 <% if @show_dealer_hit_button %>
 <p>

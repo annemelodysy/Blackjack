@@ -5,6 +5,7 @@ set :sessions, true
 
 before do
   @show_hit_stay_buttons = true
+  @show_dealer_hand = false
 end  
 
 
@@ -116,6 +117,7 @@ post '/game/player/stay' do
 end  
 
 get '/game/dealer' do
+  @show_dealer_hand = true
   @show_hit_stay_buttons = false
   dealer_total = calc_value(session[:dealercards])
   if dealer_total == 21
@@ -137,6 +139,7 @@ post '/game/dealer/hit' do
 end  
 
 get '/game/compare' do
+  @show_dealer_hand = true
   @show_hit_stay_buttons = false
   @show_dealer_hit_button = false
   player_total = calc_value(session[:playercards])
