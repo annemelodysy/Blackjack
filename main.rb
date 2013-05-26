@@ -155,5 +155,8 @@ get '/game/compare' do
 
   erb (:game)
 end      
-      
+
+get '/about' do
+  erb (:about)
+end        
 
