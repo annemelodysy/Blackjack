@@ -8,8 +8,8 @@
   <%= card_to_image(card) %>
 <% end %>
 <% else %>
-<%= card_to_image(session[:dealercards][0]) %>
 <img src='/images/cards/cover.jpg' class='card_image'>
+<%= card_to_image(session[:dealercards][1]) %>
 <% end %>
 <% if @show_dealer_hit_button %>
 <p>
