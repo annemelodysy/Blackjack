@@ -1,14 +1,13 @@
 <h2>Blackjack V1.0</h2>
 
-
-  <div class="well">
+  <div class="table">
 <h4>Dealer's Cards:</h4> 
 <% if @show_dealer_hand %>   
 <% session[:dealercards].each do |card| %>
   <%= card_to_image(card) %>
 <% end %>
 <% else %>
-<img src='/images/cards/cover.jpg' class='card_image'>
+<img src='/images/cards/cover.jpg' width="10%" height="10%" border="5" class='card_image'>
 <%= card_to_image(session[:dealercards][1]) %>
 <% end %>
 <% if @show_dealer_hit_button %>
@@ -21,7 +20,7 @@
 <% end %>
 </div>
 
- <div class ="well"> 
+ <div class ="table"> 
 <h4><%= session[:player] %>'s Cards:</h4>
 <% session[:playercards].each do |card| %>
   <%= card_to_image(card) %>
@@ -29,7 +28,7 @@
 </div>
 
 <% if @show_hit_stay_buttons %>
-<p>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</p>
+<p><strong>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</strong></p>
 <form id="hit_form" action='/game/player/hit' method='post'>
 <p><input type="submit" class="btn btn-large btn-primary" value = "Hit"></p>
 </form>

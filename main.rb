@@ -43,7 +43,7 @@ helpers do
       end
     end
 
-    image = "<img src=\"/images/cards/#{suit}_#{value}.jpg\" class='card_image'/>"
+    image = "<img src=\"/images/cards/#{suit}_#{value}.jpg\" width='10%' height='10%' class='card_image'/>"
 
     image
   end  
