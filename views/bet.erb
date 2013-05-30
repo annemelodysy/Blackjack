@@ -1,6 +1,8 @@
+<div align="center">
 <h3>How much would you like to bet?</h3>
 <p><%=session[:player]%>, you have $<%=session[:pot].to_i%>.</p>
 
 <form class="form-inline" action='/bet' method='post'>
   <input class="input-small" type='text' name='bet' placeholder="$">
   <input type="submit" value="Make a bet" class="btn">
+</div>
