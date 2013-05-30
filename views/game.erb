@@ -1,6 +1,16 @@
 <h2>Blackjack V1.0</h2>
 
-  <div class="table">
+<% if @show_bet == true %>
+<h4>
+  <%=session[:player] %> has <%=session[:pot] %> and bet <%= session[:bet] %> this round.
+</h4>
+<% end %>
+
+<% if @play_again == true %>
+<a href="/bet" class="btn btn-success">Play Again</a>
+<% end %>
+<p></p>
+<div class="well">
 <h4>Dealer's Cards:</h4> 
 <% if @show_dealer_hand %>   
 <% session[:dealercards].each do |card| %>
@@ -20,12 +30,13 @@
 <% end %>
 </div>
 
- <div class ="table"> 
+ <div class ="well"> 
 <h4><%= session[:player] %>'s Cards:</h4>
 <% session[:playercards].each do |card| %>
   <%= card_to_image(card) %>
 <% end %>
 </div>
+
 
 <% if @show_hit_stay_buttons %>
 <p><strong>Your total is <%= session[:playertotal] %>. What would you like to do, <%=session[:player]%>?</strong></p>

@@ -3,22 +3,25 @@ require 'sinatra'
 
 set :sessions, true
 
+INITIAL_POT_AMOUNT = 1000
+BLACKJACK = 21
+DEALER_MIN_HIT = 17
+
 before do
   @show_hit_stay_buttons = true
   @show_dealer_hand = false
+  @show_bet = true
 end  
 
 
 helpers do
 
   def blackjack_or_bust?(total)
-    if total > 21
-      @error = "You busted! Sorry, you lose."
-      @show_hit_stay_buttons = false
+    if total > BLACKJACK
+      loser!("You busted at #{total}.")
       halt erb (:game)
-    elsif total == 21
-      @success = "You hit Blackjack! Congratulations, you win."
-      @show_hit_stay_buttons = false  
+    elsif total == BLACKJACK
+      winner!("You hit Blackjack!")
       halt erb (:game)
     end  
   end  
@@ -62,10 +65,33 @@ helpers do
         end
       end      
     arr.select {|e| e == 'A'}.count.times do 
-      sum -=10 if sum > 21
+      sum -=10 if sum > BLACKJACK
     end
     sum
   end  
+
+  def winner!(msg)
+    @show_hit_stay_buttons = false
+    @play_again = true
+    @show_bet = false
+    session[:pot] += session[:bet]
+    @success = "#{msg} <strong>#{session[:player]} wins!</strong>. #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
+  end
+
+  def loser!(msg)
+    @play_again = true
+    @show_hit_stay_buttons = false
+    @show_bet = false
+    session[:pot] -= session[:bet]
+    @error = "#{msg} <strong>#{session[:player]} lost!</strong> #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
+  end
+  
+  def tie!(msg)
+    @play_again = true
+    @show_hit_stay_buttons = false
+    @success = "#{msg}. Wow, it's a tie...boring."
+  end
+
 end  
 
 get '/' do 
@@ -73,6 +99,7 @@ get '/' do
 end
 
 get '/name' do
+  session[:pot] = INITIAL_POT_AMOUNT
   erb :name
 end  
 
@@ -81,12 +108,36 @@ post '/name' do
   if session[:player].nil? || session[:player].empty?
     @error = "You must input a name"
     erb :name
-  else
-    redirect '/game'
+  elsif session[:player] == 'Amit'
+    @error = "Gaytenders not allowed."
+    erb :name
+  else  
+    redirect '/bet'
   end
 end  
 
+get '/bet' do
+  session[:bet] = nil
+  erb :bet
+end    
+
+post '/bet' do
+  if params[:bet].nil? || params[:bet].to_i == 0
+    @error = "You must make a bet."
+    halt erb(:bet)
+elsif params[:bet].to_i > session[:pot].to_i
+    @error = "Bet amount cannot be greater than your total of $#{session[:pot]}"  
+    halt erb(:bet)
+else    
+  session[:bet] = params['bet'].to_i
+  redirect '/game'
+end  
+end
+
+
 get '/game' do
+  @play_again = false
+
   suits = ['H', 'D', 'S', 'C']
   values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
   session[:deck] = suits.product(values).shuffle
@@ -120,11 +171,11 @@ get '/game/dealer' do
   @show_dealer_hand = true
   @show_hit_stay_buttons = false
   dealer_total = calc_value(session[:dealercards])
-  if dealer_total == 21
-    @error = "Sorry, dealer hit blackjack. Try again."
-  elsif dealer_total > 21
-    @success = "Congratulations, dealer busted with #{dealer_total}. You win #winning."
-  elsif dealer_total >= 17
+  if dealer_total == BLACKJACK
+    loser!("Sorry, the Dealer hit blackjack.")
+  elsif dealer_total > BLACKJACK
+    winner!("The Dealer busted with #{dealer_total}.")
+  elsif dealer_total >= DEALER_MIN_HIT
     redirect '/game/compare'
   else
     @show_dealer_hit_button = true
@@ -140,17 +191,16 @@ end
 
 get '/game/compare' do
   @show_dealer_hand = true
-  @show_hit_stay_buttons = false
   @show_dealer_hit_button = false
   player_total = calc_value(session[:playercards])
   dealer_total = calc_value(session[:dealercards])
 
   if player_total < dealer_total
-    @error = "Sorry, dealer has #{dealer_total} and #{session[:player]} has #{player_total}. #{session[:player]} lost :(."
+    loser!("Sorry, the Dealer has #{dealer_total} and #{session[:player]} has #{player_total}.")
   elsif player_total > dealer_total
-    @success = "Congratulations, you win. What a badass!"
+    winner!("Congratulations, you have #{player_total} and the Dealer has #{dealer_total}.")
   else
-    @error = "Wow, it's a tie...boring."
+   tie!("#{session[:player]} has #{player_total} and the Dealer has #{dealer_total}.")
   end
 
   erb (:game)
