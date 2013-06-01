@@ -19,10 +19,10 @@ helpers do
   def blackjack_or_bust?(total)
     if total > BLACKJACK
       loser!("You busted at #{total}.")
-      halt erb (:game)
+      # halt erb (:game)
     elsif total == BLACKJACK
       winner!("You hit Blackjack!")
-      halt erb (:game)
+      # halt erb (:game)
     end  
   end  
 
@@ -75,7 +75,7 @@ helpers do
     @play_again = true
     @show_bet = false
     session[:pot] += session[:bet]
-    @success = "#{msg} <strong>#{session[:player]} wins!</strong>. #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
+    @winner = "#{msg} <strong>#{session[:player]} wins!</strong>. #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
   end
 
   def loser!(msg)
@@ -83,13 +83,13 @@ helpers do
     @show_hit_stay_buttons = false
     @show_bet = false
     session[:pot] -= session[:bet]
-    @error = "#{msg} <strong>#{session[:player]} lost!</strong> #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
+    @loser = "#{msg} <strong>#{session[:player]} lost!</strong> #{session[:player]}'s new total is <strong>#{session[:pot]}</strong>."
   end
   
   def tie!(msg)
     @play_again = true
     @show_hit_stay_buttons = false
-    @success = "#{msg}. Wow, it's a tie...boring."
+    @winner = "#{msg}. Wow, it's a tie...boring."
   end
 
 end  
@@ -159,7 +159,7 @@ post '/game/player/hit' do
   session[:playercards] << session[:deck].pop
   session[:playertotal] = calc_value(session[:playercards])
   blackjack_or_bust?(session[:playertotal])
-  erb :game
+  erb :game, layout: false  
 end
 
 post '/game/player/stay' do
@@ -181,7 +181,7 @@ get '/game/dealer' do
     @show_dealer_hit_button = true
   end  
 
-  erb (:game)      
+  erb :game, layout: false  
 end
 
 post '/game/dealer/hit' do
@@ -200,10 +200,10 @@ get '/game/compare' do
   elsif player_total > dealer_total
     winner!("Congratulations, you have #{player_total} and the Dealer has #{dealer_total}.")
   else
-   tie!("#{session[:player]} has #{player_total} and the Dealer has #{dealer_total}.")
+    tie!("#{session[:player]} has #{player_total} and the Dealer has #{dealer_total}.")
   end
 
-  erb (:game)
+  erb :game, layout: false
 end      
 
 get '/about' do
